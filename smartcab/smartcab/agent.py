@@ -37,9 +37,9 @@ class LearningAgent(Agent):
         # Update epsilon using a decay function of your choice
         # Update additional class parameters as needed
         # If 'testing' is True, set epsilon and alpha to 0
-        self.epsilon=self.epsilon*0.99 #decaying epsilon
-        self.alpha=self.epsilon+random.random()*(1-self.epsilon)*self.epsilon #decaying alpha with randomness
-        #self.alpha=self.epsilon
+        self.epsilon=self.epsilon*0.99#decaying epsilon
+        #self.alpha=self.epsilon+random.random()*(1-self.epsilon)*self.epsilon #decaying alpha with randomness
+        self.alpha=self.epsilon
         if testing:
         	self.epsilon=0
         	self.alpha=0
@@ -91,7 +91,7 @@ class LearningAgent(Agent):
         # When learning, check if the 'state' is not in the Q-table
         # If it is not, create a new dictionary for that state
         #   Then, for each action available, set the initial Q-value to 0.0
-        if state not in self.Q:
+        if self.learning and state not in self.Q:
         	self.Q[state]={i:0.0 for i in self.valid_actions}
         return
 
@@ -137,7 +137,8 @@ class LearningAgent(Agent):
         ###########
         # When learning, implement the value iteration update rule
         #   Use only the learning rate 'alpha' (do not use the discount factor 'gamma')
-        self.Q[state][action]+=self.alpha*reward
+        if self.learning:
+        	self.Q[state][action]=self.alpha*reward+(1-self.alpha)*self.Q[state][action]
         return
 
 
@@ -188,7 +189,7 @@ def run():
     #   display      - set to False to disable the GUI if PyGame is enabled
     #   log_metrics  - set to True to log trial and simulation results to /logs
     #   optimized    - set to True to change the default log file name
-    sim = Simulator(env,update_delay=0.000,log_metrics =True,optimized=True,display=False)
+    sim = Simulator(env,update_delay=0.000,log_metrics =True,optimized=True,display=True)
     
     ##############
     # Run the simulator
